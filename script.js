@@ -134,3 +134,12 @@ async function saveScoreToDB(score) {
         console.error('Error saving score:', error);
     }
 }
+function resizeGameBoard() {
+    const board = document.querySelector('.game-board');
+    const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+    board.style.width = `${size}px`;
+    board.style.height = `${size}px`;
+}
+
+window.addEventListener('resize', resizeGameBoard);
+resizeGameBoard();
