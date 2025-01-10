@@ -1,0 +1,119 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to right, #040504, #968a76);
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 10px;
+}
+
+.card {
+    width: 100px;
+    height: 100px;
+    perspective: 1000px;
+    position: relative;
+    border: 2px solid #000; /* Добавлена черная обводка */
+    border-radius: 10px; /* Закругленные края */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Тень для выделения */
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg); /* Начальное состояние карточки */
+    transition: transform 0.6s ease; /* Плавный переход для переворота */
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(180deg); /* Переворот карточки */
+}
+
+.card-front, .card-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden; /* Скрываем сторону, которая "сзади" */
+    border-radius: 10px;
+}
+
+.card-front {
+    background-color: #dacaa8; /* Цвет фона передней стороны карточки */
+    background-image: url('src/question-mark_5730444.png'); /* Изображение на передней стороне */
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover; /* Изображение будет растягиваться по размеру карточки */
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+
+
+.card-back {
+    background: #dacaa8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+    transform: rotateY(180deg); /* Задняя сторона перевернута на 180 градусов */
+    border-radius: 10px; /* Закругленные углы */
+}
+
+.card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Изображения полностью занимают карточку */
+    border-radius: 10px; /* Сохраняем закругленные углы */
+}
+#restart {
+    background: linear-gradient(145deg, #6e7dff, #4e5ef7); /* Градиентный фон */
+    color: white; /* Белый текст */
+    font-size: 18px; /* Размер шрифта */
+    padding: 10px 20px; /* Внутренние отступы */
+    border: none; /* Без границы */
+    border-radius: 10px; /* Закругленные углы */
+    cursor: pointer; /* Курсор в виде руки при наведении */
+    transition: all 0.3s ease; /* Плавный переход при изменении */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для кнопки */
+    margin-top: 30px; /* Отступ сверху */
+}
+
+#restart:hover {
+    background: linear-gradient(145deg, #4e5ef7, #6e7dff); /* Изменение градиента при наведении */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Увеличиваем тень при наведении */
+}
+
+#restart:active {
+    transform: translateY(2px); /* Эффект нажимающей кнопки */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Уменьшаем тень при нажатии */
+}
+
+#score {
+
+    color: white; /* Белый текст */
+    font-size: 24px; /* Размер шрифта */
+    padding: 10px 20px; /* Внутренние отступы */
+    border: none; /* Без границы */
+    border-radius: 10px; /* Закругленные углы */
+    transition: all 0.3s ease; /* Плавный переход при изменении */
+   
+    margin-bottom: 20px; /* Отступ снизу */
+}
+
