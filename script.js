@@ -140,21 +140,32 @@ restartButton?.addEventListener('click', async () => {
 });
 
 // Сохранение счёта в базу данных
-async function saveScoreToDB(score) {
+async function saveScoreToDB(userData, score) {
     try {
-        const userData = {
-            telegramId: user?.id || null,
-            username: user?.username || 'Неизвестно',
+        // Получаем данные пользователя из аргумента
+        const { telegramId, username } = userData;
+
+        // Проверка на наличие данных пользователя
+        if (!telegramId) {
+            console.error('Telegram ID is required');
+            return;
+        }
+
+        // Формируем объект с данными для сохранения
+        const scoreData = {
+            score,
+            user: { telegramId, username },
         };
 
-        console.log('Отправляем данные на сервер:', { score, user: userData });
+        console.log('Отправляем данные на сервер:', scoreData);
 
+        // Отправка данных на сервер
         const response = await fetch(`${API_BASE_URL}/save-score`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ score, user: userData }),
+            body: JSON.stringify(scoreData),
         });
 
         if (!response.ok) {
