@@ -7,9 +7,32 @@ if (!board || !restartButton || !scoreDisplay) {
     console.error('Не удалось найти необходимые элементы на странице');
 }
 
+/ Ожидаем полной инициализации Telegram WebApp
+const tg = window.Telegram.WebApp;
+
+// Инициализация Telegram WebApp
+tg.ready();
+
+// Получаем данные пользователя после инициализации
+const user = tg.getUser();
+if (!user || !user.id) {
+    console.error('Данные пользователя Telegram не получены:', user);
+} else {
+    console.log('Данные пользователя Telegram:', user);
+
+    // Сохраняем данные для отправки на сервер
+    const userData = {
+        telegramId: user.id,  // Получаем ID пользователя
+        username: user.username || 'Неизвестно',  // Имя пользователя, если есть
+    };
+
+    // Пример использования в функции сохранения счёта
+    saveScoreToDB(userData, score);
+}
+
 // Инициализация переменных
 let score = 0; // Начальный счёт
-const API_BASE_URL = 'https://servertggame.onrender.com'; // Обновите URL для API
+const API_BASE_URL = 'https://servertggame.onrender.com'; // URL вашего API
 let cards = [];
 let flippedCards = [];
 let matchedPairs = 0;
@@ -38,14 +61,14 @@ function createBoard() {
     cards.forEach((image, index) => {
         const card = document.createElement('div');
         card.classList.add('card');
-        card.innerHTML = `
+        card.innerHTML = 
             <div class="card-inner">
                 <div class="card-front"></div>
                 <div class="card-back">
                     <img src="${image}" alt="Card Image">
                 </div>
             </div>
-        `;
+        ;
         card.dataset.index = index;
         board.appendChild(card);
     });
@@ -98,19 +121,17 @@ function checkMatch() {
 // Обновление отображения счёта
 function updateScore() {
     if (scoreDisplay) {
-        scoreDisplay.textContent = `Score: ${score}`;
+        scoreDisplay.textContent = Score: ${score};
     }
 }
 
 // Перезапуск игры
 restartButton?.addEventListener('click', async () => {
-    const user = Telegram.WebApp.initDataUnsafe.user; // Получаем данные пользователя Telegram
-    console.log('Данные пользователя Telegram:', user);
-
+    console.log('Кнопка Restart нажата');
     if (score > 0) {
-        await saveScoreToDB(score, user); // Сохраняем счёт перед перезапуском
+        console.log('Сохраняем текущий счёт:', score);
+        await saveScoreToDB(score); // Сохраняем счёт перед перезапуском
     }
-
     score = 0; // Сбрасываем счёт
     matchedPairs = 0;
     flippedCards = [];
@@ -119,28 +140,36 @@ restartButton?.addEventListener('click', async () => {
 });
 
 // Сохранение счёта в базу данных
-async function saveScoreToDB(score, user) {
-    // Подготовка данных для отправки
-    const userData = {
-        id: user?.id || null,
-        username: user?.username || '',
-        firstName: user?.first_name || '',
-        lastName: user?.last_name || '',
-    };
-
+async function saveScoreToDB(userData, score) {
     try {
-        console.log('Отправляем данные на сервер:', { score, user: userData });
+        // Получаем данные пользователя из аргумента
+        const { telegramId, username } = userData;
 
-        const response = await fetch(`${API_BASE_URL}/save-score`, {
+        // Проверка на наличие данных пользователя
+        if (!telegramId) {
+            console.error('Telegram ID is required');
+            return;
+        }
+
+        // Формируем объект с данными для сохранения
+        const scoreData = {
+            score,
+            user: { telegramId, username },
+        };
+
+        console.log('Отправляем данные на сервер:', scoreData);
+
+        // Отправка данных на сервер
+        const response = await fetch(${API_BASE_URL}/save-score, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ score, user: userData }), // Передача счёта и данных пользователя
+            body: JSON.stringify(scoreData),
         });
 
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}`);
+            throw new Error(Ошибка HTTP: ${response.status});
         }
 
         const data = await response.json();
@@ -152,5 +181,3 @@ async function saveScoreToDB(score, user) {
 
 // Создаём игровое поле при загрузке
 createBoard();
-
-
