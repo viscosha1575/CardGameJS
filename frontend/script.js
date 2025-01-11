@@ -110,7 +110,7 @@ createBoard();
 
 async function saveScoreToDB(score) {
     try {
-        const response = await fetch('http://localhost:3000/save-score', {
+        const response = await fetch('https://servertggame.onrender.com/save-score', { // Обновленный URL сервера
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
