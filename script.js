@@ -39,13 +39,14 @@ function createBoard() {
         const card = document.createElement('div');
         card.classList.add('card');
         card.innerHTML = 
+            `
             <div class="card-inner">
                 <div class="card-front"></div>
                 <div class="card-back">
                     <img src="${image}" alt="Card Image">
                 </div>
             </div>
-        ;
+        `;
         card.dataset.index = index;
         board.appendChild(card);
     });
