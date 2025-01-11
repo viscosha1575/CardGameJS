@@ -10,7 +10,11 @@ if (!board || !restartButton || !scoreDisplay) {
 // Telegram API объект
 const tg = window.Telegram?.WebApp || {}; // Telegram WebApp
 const user = tg?.initDataUnsafe?.user || {}; // Получаем данные пользователя Telegram
-console.log('Данные пользователя Telegram:', user);
+if (!user || !user.id) {
+    console.error('Данные пользователя Telegram не получены:', user);
+} else {
+    console.log('Данные пользователя Telegram:', user);
+}
 
 // Инициализация переменных
 let score = 0; // Начальный счёт
@@ -125,10 +129,8 @@ restartButton?.addEventListener('click', async () => {
 async function saveScoreToDB(score) {
     try {
         const userData = {
-            id: user?.id || null,
-            username: user?.username || '',
-            firstName: user?.first_name || '',
-            lastName: user?.last_name || '',
+            telegramId: user?.id || null,
+            username: user?.username || 'Неизвестно',
         };
 
         console.log('Отправляем данные на сервер:', { score, user: userData });
@@ -154,5 +156,3 @@ async function saveScoreToDB(score) {
 
 // Создаём игровое поле при загрузке
 createBoard();
-
-
