@@ -7,15 +7,27 @@ if (!board || !restartButton || !scoreDisplay) {
     console.error('Не удалось найти необходимые элементы на странице');
 }
 
+/ Ожидаем полной инициализации Telegram WebApp
 const tg = window.Telegram.WebApp;
 
-tg.ready(); // Дожидаемся полной инициализации
+// Инициализация Telegram WebApp
+tg.ready();
 
-const user = tg.getUser();  // Получаем данные пользователя после инициализации
+// Получаем данные пользователя после инициализации
+const user = tg.getUser();
 if (!user || !user.id) {
     console.error('Данные пользователя Telegram не получены:', user);
 } else {
     console.log('Данные пользователя Telegram:', user);
+
+    // Сохраняем данные для отправки на сервер
+    const userData = {
+        telegramId: user.id,  // Получаем ID пользователя
+        username: user.username || 'Неизвестно',  // Имя пользователя, если есть
+    };
+
+    // Пример использования в функции сохранения счёта
+    saveScoreToDB(userData, score);
 }
 
 // Инициализация переменных
