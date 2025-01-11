@@ -7,9 +7,11 @@ if (!board || !restartButton || !scoreDisplay) {
     console.error('Не удалось найти необходимые элементы на странице');
 }
 
-// Telegram API объект
-const tg = window.Telegram?.WebApp || {}; // Telegram WebApp
-const user = tg.initDataUnsafe?.user || {}; // Получаем данные пользователя Telegram
+const tg = window.Telegram.WebApp;
+
+tg.ready(); // Дожидаемся полной инициализации
+
+const user = tg.getUser();  // Получаем данные пользователя после инициализации
 if (!user || !user.id) {
     console.error('Данные пользователя Telegram не получены:', user);
 } else {
