@@ -7,9 +7,14 @@ if (!board || !restartButton || !scoreDisplay) {
     console.error('Не удалось найти необходимые элементы на странице');
 }
 
+// Telegram API объект
+const tg = window.Telegram?.WebApp || {}; // Telegram WebApp
+const user = tg?.initDataUnsafe?.user || {}; // Получаем данные пользователя Telegram
+console.log('Данные пользователя Telegram:', user);
+
 // Инициализация переменных
 let score = 0; // Начальный счёт
-const API_BASE_URL = 'https://servertggame.onrender.com'; // Обновите URL для API
+const API_BASE_URL = 'https://servertggame.onrender.com'; // URL вашего API
 let cards = [];
 let flippedCards = [];
 let matchedPairs = 0;
@@ -104,7 +109,9 @@ function updateScore() {
 
 // Перезапуск игры
 restartButton?.addEventListener('click', async () => {
+    console.log('Кнопка Restart нажата');
     if (score > 0) {
+        console.log('Сохраняем текущий счёт:', score);
         await saveScoreToDB(score); // Сохраняем счёт перед перезапуском
     }
     score = 0; // Сбрасываем счёт
@@ -123,6 +130,8 @@ async function saveScoreToDB(score) {
             firstName: user?.first_name || '',
             lastName: user?.last_name || '',
         };
+
+        console.log('Отправляем данные на сервер:', { score, user: userData });
 
         const response = await fetch(`${API_BASE_URL}/save-score`, {
             method: 'POST',
@@ -145,4 +154,5 @@ async function saveScoreToDB(score) {
 
 // Создаём игровое поле при загрузке
 createBoard();
+
 
