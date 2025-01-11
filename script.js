@@ -15,7 +15,6 @@ let flippedCards = [];
 let matchedPairs = 0;
 let isChecking = false;
 
-// Список путей к картинкам
 const images = [
     'src/biscuit_8933104.png',
     'src/burger_8932640.png',
@@ -26,7 +25,6 @@ const images = [
     'src/ice-cream_8933094.png',
     'src/soda-can_8933015.png',
 ];
-
 // Функция создания карточек
 function createBoard() {
     if (!board) return; // Защита от отсутствия элемента
