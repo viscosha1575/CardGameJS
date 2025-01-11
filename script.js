@@ -120,6 +120,8 @@ restartButton.addEventListener('click', async () => {
 createBoard();
 
 // Сохранение счёта в базу данных
+const API_BASE_URL = 'https://servertggame.onrender.com';
+
 async function saveScoreToDB(score) {
     try {
         const response = await fetch(`${API_BASE_URL}/save-score`, {
@@ -135,6 +137,7 @@ async function saveScoreToDB(score) {
         console.error('Error saving score:', error);
     }
 }
+
 function resizeGameBoard() {
     const board = document.querySelector('.game-board');
     const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
