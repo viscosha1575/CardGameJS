@@ -22,7 +22,7 @@ let cards = [...images, ...images].sort(() => Math.random() - 0.5);
 let flippedCards = [];
 let matchedPairs = 0;
 let isChecking = false; // Флаг проверки совпадений
-const API_BASE_URL = 'https://servertggame.onrender.com';
+
 
 // Функция создания карточек
 function createBoard() {
