@@ -117,16 +117,25 @@ restartButton?.addEventListener('click', async () => {
 // Сохранение счёта в базу данных
 async function saveScoreToDB(score) {
     try {
+        const userData = {
+            id: user?.id || null,
+            username: user?.username || '',
+            firstName: user?.first_name || '',
+            lastName: user?.last_name || '',
+        };
+
         const response = await fetch(`${API_BASE_URL}/save-score`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ score }),
+            body: JSON.stringify({ score, user: userData }),
         });
+
         if (!response.ok) {
             throw new Error(`Ошибка HTTP: ${response.status}`);
         }
+
         const data = await response.json();
         console.log('Счёт сохранён:', data);
     } catch (error) {
