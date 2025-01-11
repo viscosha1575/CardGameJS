@@ -23,7 +23,6 @@ let flippedCards = [];
 let matchedPairs = 0;
 let isChecking = false; // Флаг проверки совпадений
 
-
 // Функция создания карточек
 function createBoard() {
     board.innerHTML = '';
@@ -120,11 +119,9 @@ restartButton.addEventListener('click', async () => {
 createBoard();
 
 // Сохранение счёта в базу данных
-const API_BASE_URL = 'https://servertggame.onrender.com';
-
 async function saveScoreToDB(score) {
     try {
-        const response = await fetch(`${API_BASE_URL}/save-score`, {
+        const response = await fetch('http://localhost:3000/save-score', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -138,12 +135,3 @@ async function saveScoreToDB(score) {
     }
 }
 
-function resizeGameBoard() {
-    const board = document.querySelector('.game-board');
-    const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
-    board.style.width = `${size}px`;
-    board.style.height = `${size}px`;
-}
-
-window.addEventListener('resize', resizeGameBoard);
-resizeGameBoard();
