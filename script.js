@@ -22,6 +22,7 @@ let cards = [...images, ...images].sort(() => Math.random() - 0.5);
 let flippedCards = [];
 let matchedPairs = 0;
 let isChecking = false; // Флаг проверки совпадений
+const API_BASE_URL = 'https://servertggame.onrender.com';
 
 // Функция создания карточек
 function createBoard() {
@@ -121,7 +122,7 @@ createBoard();
 // Сохранение счёта в базу данных
 async function saveScoreToDB(score) {
     try {
-        const response = await fetch('http://localhost:3000/save-score', {
+        const response = await fetch(`${API_BASE_URL}/save-score`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
