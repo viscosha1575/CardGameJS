@@ -9,7 +9,7 @@ if (!board || !restartButton || !scoreDisplay) {
 
 // Telegram API объект
 const tg = window.Telegram?.WebApp || {}; // Telegram WebApp
-const user = tg?.initDataUnsafe?.user || {}; // Получаем данные пользователя Telegram
+const user = tg.initDataUnsafe?.user || {}; // Получаем данные пользователя Telegram
 if (!user || !user.id) {
     console.error('Данные пользователя Telegram не получены:', user);
 } else {
@@ -156,3 +156,4 @@ async function saveScoreToDB(score) {
 
 // Создаём игровое поле при загрузке
 createBoard();
+
