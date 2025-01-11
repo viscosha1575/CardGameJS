@@ -2,9 +2,20 @@ const board = document.querySelector('.game-board');
 const restartButton = document.getElementById('restart');
 const scoreDisplay = document.getElementById('score'); // Ссылка на элемент для отображения счёта
 
-let score = 0; // Начальный счёт
+// Проверка на существование элементов DOM
+if (!board || !restartButton || !scoreDisplay) {
+    console.error('Не удалось найти необходимые элементы на странице');
+}
 
-// Список путей к картинкам (уникальные изображения)
+// Инициализация переменных
+let score = 0; // Начальный счёт
+const API_BASE_URL = 'https://servertggame.onrender.com'; // Обновите URL для API
+let cards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let isChecking = false;
+
+// Список путей к картинкам
 const images = [
     'src/biscuit_8933104.png',
     'src/burger_8932640.png',
@@ -13,19 +24,17 @@ const images = [
     'src/coffee-cup_8933030.png',
     'src/hot-chocolate_8933065.png',
     'src/ice-cream_8933094.png',
-    'src/soda-can_8933015.png'
+    'src/soda-can_8933015.png',
 ];
-
-// Создаем дубли каждой картинки и перемешиваем
-let cards = [...images, ...images].sort(() => Math.random() - 0.5);
-
-let flippedCards = [];
-let matchedPairs = 0;
-let isChecking = false; // Флаг проверки совпадений
 
 // Функция создания карточек
 function createBoard() {
+    if (!board) return; // Защита от отсутствия элемента
     board.innerHTML = '';
+
+    // Перемешивание карточек
+    cards = [...images, ...images].sort(() => Math.random() - 0.5);
+
     cards.forEach((image, index) => {
         const card = document.createElement('div');
         card.classList.add('card');
@@ -41,25 +50,14 @@ function createBoard() {
         board.appendChild(card);
     });
 
-    // Добавляем обработчики событий для всех карточек
-    document.querySelectorAll('.card').forEach(card => {
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-        if (!isTouchDevice) {
-            // Для устройств без тач-скрина добавляем обработчик клика
-            card.addEventListener('click', () => {
-                flipCard(card);
-            });
-        } else {
-            // Для устройств с тач-скрином добавляем обработчик touchstart
-            card.addEventListener('touchstart', () => {
-                flipCard(card);
-            });
-        }
+    // Добавляем обработчики событий
+    const cardElements = document.querySelectorAll('.card');
+    cardElements.forEach(card => {
+        card.addEventListener('click', () => flipCard(card));
     });
 }
 
-// Переворачивание карточек
+// Функция переворачивания карточек
 function flipCard(card) {
     if (isChecking || flippedCards.length === 2 || card.classList.contains('flipped')) return;
 
@@ -72,7 +70,7 @@ function flipCard(card) {
     }
 }
 
-// Проверка на совпадение
+// Проверка совпадения карточек
 function checkMatch() {
     const [card1, card2] = flippedCards;
     const index1 = card1.dataset.index;
@@ -80,58 +78,62 @@ function checkMatch() {
 
     if (cards[index1] === cards[index2]) {
         matchedPairs++;
-        score += 10; // Увеличиваем счёт на 10 за правильную пару
-        scoreDisplay.textContent = `Score: ${score}`; // Обновляем счёт
+        score += 10; // Увеличиваем счёт
+        updateScore();
 
         if (matchedPairs === images.length) {
             saveScoreToDB(score); // Сохраняем счёт после победы
-            console.log('Game won!'); // Лог вместо оповещения
+            console.log('Вы выиграли!');
         }
-
-        flippedCards = []; // Очищаем массив совпавших карточек
     } else {
-        // Убираем класс flipped с карточек, если они не совпали
-        setTimeout(() => {
-            card1.classList.remove('flipped');
-            card2.classList.remove('flipped');
-            flippedCards = []; // Очищаем массив перевёрнутых карточек
-        }, 1000);
+        // Убираем класс flipped, если карточки не совпадают
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
     }
 
-    isChecking = false; // Разрешаем переворачивать другие карточки
+    flippedCards = [];
+    isChecking = false; // Разблокируем переворачивание
+}
+
+// Обновление отображения счёта
+function updateScore() {
+    if (scoreDisplay) {
+        scoreDisplay.textContent = `Score: ${score}`;
+    }
 }
 
 // Перезапуск игры
-restartButton.addEventListener('click', async () => {
+restartButton?.addEventListener('click', async () => {
     if (score > 0) {
-        await saveScoreToDB(score); // Сохраняем текущий счёт перед перезапуском
+        await saveScoreToDB(score); // Сохраняем счёт перед перезапуском
     }
-
-    cards = [...images, ...images].sort(() => Math.random() - 0.5);
+    score = 0; // Сбрасываем счёт
     matchedPairs = 0;
     flippedCards = [];
-    score = 0; // Сбрасываем счёт при перезапуске
-    scoreDisplay.textContent = `Score: ${score}`; // Обновляем счёт
+    updateScore();
     createBoard();
 });
-
-// Создание игрового поля
-createBoard();
 
 // Сохранение счёта в базу данных
 async function saveScoreToDB(score) {
     try {
-        const response = await fetch('http://localhost:3000/save-score', {
+        const response = await fetch(`${API_BASE_URL}/save-score`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ score }),
         });
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
         const data = await response.json();
-        console.log('Score saved:', data);
+        console.log('Счёт сохранён:', data);
     } catch (error) {
-        console.error('Error saving score:', error);
+        console.error('Ошибка при сохранении счёта:', error);
     }
 }
+
+// Создаём игровое поле при загрузке
+createBoard();
 
